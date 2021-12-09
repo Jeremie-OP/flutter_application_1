@@ -25,7 +25,10 @@ const vinRandom = new Vin({nom: 'WineName', domaine : 'WineDomain', annee: 'xxxx
 const vinRandom2 = new Vin({nom: 'WiddneName', domaine : 'WinessDomain', annee: 'xxsxx'});
 
 vinRandom.commentaires.push({ident:'wiak', commentaire: 'ceci est une comm!', note: 9});
-vinRandom.commentaires.push({ident:'wiffak', commentaire: 'ceci estddddd une comm!', note: '5'});
+for (let index = 0; index < 10; index++) {
+	vinRandom.commentaires.push({ident:'wiffak', commentaire: 'ceci estddddd une comm!', note: '5'});
+	
+}
 wiak.save().then(() => console.log("ajout de l'user"));
 vinRandom2.save();
 vinRandom.save().then(() => console.log("ajout du vin"));

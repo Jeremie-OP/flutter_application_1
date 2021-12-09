@@ -107,7 +107,10 @@ class _WinePageState extends State<WinePage> {
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.all(Radius.circular(5))),
-                  )
+                  ),
+                  Expanded(
+                    child: CommentsList(comments: wine.comments),
+                  ),
                 ],
               ),
             )),
