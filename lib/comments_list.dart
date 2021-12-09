@@ -21,15 +21,24 @@ class CommentsList extends StatelessWidget {
         trailing: Text(comments.length.toString()),
         title: Text("Commentaires"),
         children: <Widget>[
-          ListView.builder(
+          Container(
+              child: ListView.builder(
             shrinkWrap: true,
             controller: ScrollController(),
             scrollDirection: Axis.vertical,
             itemCount: comments.length,
             itemBuilder: (BuildContext context, int index) {
-              return _SingleComment(comment: comments[index]);
+              return Padding(
+                  padding: EdgeInsets.all(3),
+                  child: Container(
+                      padding: EdgeInsets.only(left: 5, right: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: _SingleComment(comment: comments[index])));
             },
-          ),
+          )),
         ],
       ),
     );
@@ -48,9 +57,16 @@ class _SingleComment extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(comment.user),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(comment.user),
+              Text(
+                comment.note.toString(),
+              ),
+            ],
+          ),
           Text(comment.comment),
-          Text(comment.note.toString()),
         ],
       ),
     );

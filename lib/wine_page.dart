@@ -109,7 +109,8 @@ class _WinePageState extends State<WinePage> {
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                   ),
                   Expanded(
-                    child: CommentsList(comments: wine.comments),
+                    child: SingleChildScrollView(
+                        child: CommentsList(comments: wine.comments)),
                   ),
                 ],
               ),
