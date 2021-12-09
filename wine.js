@@ -8,7 +8,7 @@ const { Schema } = mongoose;
 
 const User = mongoose.model('myCollection3211', new Schema( { ident: String, passwd: String, admin: Boolean} ));
 User.collection.drop();
-const Vin = mongoose.model('myCollection3212', new Schema({ nom: String, domaine: String, annee: String, commentaires: [{nom: String, commentaire: String, note: Number}]}));
+const Vin = mongoose.model('myCollection3212', new Schema({ nom: String, domaine: String, annee: String, commentaires: [{ident: String, commentaire: String, note: Number}]}));
 Vin.collection.drop();
 
 const mongoAccess = 'mongodb://127.0.0.1:27017/db';

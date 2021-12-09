@@ -20,15 +20,16 @@ class CommentsList extends StatelessWidget {
         leading: Icon(Icons.comment),
         trailing: Text("un certain nombre"),
         title: Text("Commentaires"),
-        children: List<Widget>.generate(
-            comments.length, (int index) => _SingleComment()),
+        children: List<Widget>.generate(comments.length,
+            (int index) => _SingleComment(comment: comments[index])),
       ),
     );
   }
 }
 
 class _SingleComment extends StatelessWidget {
-  const _SingleComment({Key? key}) : super(key: key);
+  CommentModel comment;
+  _SingleComment({Key? key, required this.comment}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

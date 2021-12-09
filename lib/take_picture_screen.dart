@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_application_1/home.dart';
 import 'package:flutter_application_1/login.dart';
 import 'package:flutter_application_1/wine_page.dart';
 import 'package:google_ml_vision/google_ml_vision.dart';
@@ -143,7 +144,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
     var response = await http.post(url, body: {'scan': request});
     switch (response.statusCode) {
       case 200:
-        var result = response.body;
+        var result = json.decode(response.body);
         _apiResponse.Data = result;
         break;
       case 401:
@@ -171,17 +172,16 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
         body: //Image.file(File(widget.imagePath)),
             Container(
           child: FutureBuilder<ApiResponse>(
-              future: tryToGetWine(widget.imagePath),
+              future: getWine("WineName"), //pour le moment je triche ici
+              //future: tryToGetWine(widget.imagePath),
               builder:
                   (BuildContext context, AsyncSnapshot<ApiResponse> snapshot) {
                 List<Widget> children;
                 if (snapshot.hasData) {
-                  return WinePage(
-                      request: "WineName"); //pour le moment je triche ici
-                  return WinePage(
-                      request: snapshot.hasData
-                          .toString()); //pour le moment je triche ici
-
+                  if (snapshot.data!.Data != null) {
+                    return WinePage(request: snapshot.data!.Data);
+                  }
+                  return HomePage();
                   /*
                   children = <Widget>[
                     Column(
