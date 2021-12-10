@@ -76,13 +76,11 @@ class HomePageState extends State<HomePage> {
                 builder:
                     (BuildContext context, AsyncSnapshot<String> snapshot) {
                   if (snapshot.hasData)
-                    return Text(user);
+                    return Text("Bienvenue " + user);
                   else
                     return CircularProgressIndicator();
                 }),
-            const Image(
-                image: NetworkImage(
-                    "https://media0.giphy.com/media/cfuL5gqFDreXxkWQ4o/giphy.gif")),
+            const Image(image: AssetImage('assets/vino.gif')),
           ]),
         ),
         floatingActionButton: FloatingActionButton(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/add_vin.dart';
 import 'package:flutter_application_1/home.dart';
 import 'package:flutter_application_1/register.dart';
 import 'package:flutter_application_1/service.dart';
@@ -85,6 +86,16 @@ class _DrawerWineState extends State<DrawerWine> {
                   setState(() {});
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Disconnect()));
+                },
+              )),
+          Visibility(
+              visible: Service().admin,
+              child: ListTile(
+                title: const Text('Ajouter un vin'),
+                onTap: () {
+                  setState(() {});
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AddWineScreen()));
                 },
               )),
         ],

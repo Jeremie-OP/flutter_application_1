@@ -71,6 +71,16 @@ app.post('/api/getwine', async function (request, response) {
 	else response.status(401).send("Nous n'avons pas trouvé de vin correspondant à la bouteille que vous avez pris en photo.")
 });
 
+app.post('/api/addwine', async function(request, response) {
+	let jwtUser = request.body.jwt;	//token de l'user
+	if (jwt.verify(jwtUser, KEY)) {
+		const wine = new Vin({nom: request.body.wineName , domaine : request.body.wineDomain, annee: request.body.wineYear});
+		wine.save();
+		console.log(wine);
+		response.status(200).send(wine);
+	} else response.status(400).send("vous n'avez pas le droit de faire ça");
+});
+
 app.post('/api/sendcomm', async function(request, response) {
 	let id = request.body.id;	//id du vin
 	let ident = request.body.ident;	//nom de l'utilisateur
@@ -93,17 +103,16 @@ app.post('/api/deletecomm', async function(request, response) {
 	let idWine = request.body.idWine;	//id du vin
 	let jwtUser = request.body.jwt;	//token de l'user
 	if (jwt.verify(jwtUser, KEY)) {
-	let wine = await Vin.findOne({_id: idWine});
-	console.log(wine);
-	Vin.findOneAndUpdate(					//si l'utilisateur a deja fait un commentaire
-		{_id: idWine},							//alors ce commentaire est supprimé
-		{ $pull: { commentaires: {_id: idComm}}},
-		{new : true},
-		function(err) {
+		let wine = await Vin.findOne({_id: idWine});
+		Vin.findOneAndUpdate(					//si l'utilisateur a deja fait un commentaire
+			{_id: idWine},							//alors ce commentaire est supprimé
+			{ $pull: { commentaires: {_id: idComm}}},
+			{new : true},
+			function(err) {
 			if(err) {console.log(err)}
-		}
-	);
-	response.status(200).send(wine);
+			}
+		);
+		response.status(200).send(wine);
 	} else response.status(400).send("vous n'avez pas le droit de faire ça");
 });
 
@@ -138,6 +147,7 @@ app.post('/signup', async function (request, response) {
 		response.status(400).send("Utilisateur existe déjà");
 	}
 	else {
+		console.log('je crée le monsieur');
 		let user = await User.create( {ident: ident, passwd: passwd, admin: false} );
 		var payload = {
 			ident : user["ident"],

@@ -86,8 +86,8 @@ class _WinePageState extends State<WinePage> {
                   const SizedBox(
                     height: 30,
                   ),
-                  Text(
-                    wine.domain,
+                  const Text(
+                    "Domaine",
                   ),
                   const SizedBox(
                     height: 5,
