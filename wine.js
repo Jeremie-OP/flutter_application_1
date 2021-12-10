@@ -8,7 +8,18 @@ const { Schema } = mongoose;
 
 const User = mongoose.model('myCollection3211', new Schema( { ident: String, passwd: String, admin: Boolean} ));
 User.collection.drop();
-const Vin = mongoose.model('myCollection3212', new Schema({ nom: String, domaine: String, annee: String, commentaires: [{ident: String, commentaire: String, note: Number}]}));
+const commentaireSchema = new Schema({
+	ident: String,
+	commentaire: String,
+	note: Number
+});
+const vinSchema = new Schema({
+	nom: String,
+	domaine: String,
+	annee: String,
+	commentaires: [commentaireSchema]
+})
+const Vin = mongoose.model('myCollection3212', vinSchema);
 Vin.collection.drop();
 
 const mongoAccess = 'mongodb://127.0.0.1:27017/db';
@@ -24,9 +35,11 @@ const wiak = new User({ident: 'wiak', passwd: 'def3265f1ee9dd63fa71eff906a401480
 const vinRandom = new Vin({nom: 'WineName', domaine : 'WineDomain', annee: 'xxxx'});
 const vinRandom2 = new Vin({nom: 'WiddneName', domaine : 'WinessDomain', annee: 'xxsxx'});
 
-vinRandom.commentaires.push({ident:'wiak', commentaire: 'ceci est une comm!', note: 9});
+console.log(vinRandom);
+
+vinRandom.commentaires.push({ident:'wiak', commentaire: 'ceci est une comm!', note: 1});
 for (let index = 0; index < 10; index++) {
-	vinRandom.commentaires.push({ident:'wiffak', commentaire: 'ceci estddddd une comm!', note: '5'});
+	vinRandom.commentaires.push({ident:'wiffak', commentaire: 'ceci estddddd une comm!', note: 4});
 	
 }
 wiak.save().then(() => console.log("ajout de l'user"));
@@ -58,6 +71,42 @@ app.post('/api/getwine', async function (request, response) {
 	else response.status(401).send("Nous n'avons pas trouvé de vin correspondant à la bouteille que vous avez pris en photo.")
 });
 
+app.post('/api/sendcomm', async function(request, response) {
+	let id = request.body.id;	//id du vin
+	let ident = request.body.ident;	//nom de l'utilisateur
+	let wine = await Vin.findOne({_id: id});
+	Vin.findOneAndUpdate(					//si l'utilisateur a deja fait un commentaire
+		{_id: id},							//alors ce commentaire est supprimé
+		{ $pull: { commentaires: {ident: ident}}},
+		{new : true},
+		function(err) {
+			if(err) {console.log(err)}
+		}
+	);
+	wine.commentaires.push({ident : ident, commentaire: request.body.commentaire, note: request.body.note});
+	wine.save();
+	response.status(200).send(wine);
+});
+
+app.post('/api/deletecomm', async function(request, response) {
+	let idComm = request.body.id;	//id du commentaire
+	let idWine = request.body.idWine;	//id du vin
+	let jwtUser = request.body.jwt;	//token de l'user
+	if (jwt.verify(jwtUser, KEY)) {
+	let wine = await Vin.findOne({_id: idWine});
+	console.log(wine);
+	Vin.findOneAndUpdate(					//si l'utilisateur a deja fait un commentaire
+		{_id: idWine},							//alors ce commentaire est supprimé
+		{ $pull: { commentaires: {_id: idComm}}},
+		{new : true},
+		function(err) {
+			if(err) {console.log(err)}
+		}
+	);
+	response.status(200).send(wine);
+	} else response.status(400).send("vous n'avez pas le droit de faire ça");
+});
+
 app.post('/login', async function (request, response) {
 	console.log("requete reçu");
 	let ident = request.body.ident;
@@ -84,13 +133,17 @@ app.post('/login', async function (request, response) {
 app.post('/signup', async function (request, response) {
 	let ident = request.body.ident;
 	let passwd = request.body.passwd;
-	let admin = request.body.admin;
 	let user = await User.findOne( {ident: ident} );
 	if (user) {
-		response.status(200).send("Utilisateur existe déjà");
+		response.status(400).send("Utilisateur existe déjà");
 	}
 	else {
-		await User.create( {ident: ident, passwd: passwd, admin: admin} );
-		response.status(200).send("Utilisateur crée");
+		let user = await User.create( {ident: ident, passwd: passwd, admin: false} );
+		var payload = {
+			ident : user["ident"],
+			admin : user["admin"],
+		}
+		var token = jwt.sign(payload, KEY, {algorithm: "HS256", expiresIn: "15d"});
+		response.status(200).send(token);
 	}
 });

@@ -13,6 +13,7 @@ class Service {
 
   dynamic get token => _token;
   String get user => _user;
+  bool get admin => _admin;
 
   set token(dynamic value) {
     _token = value;

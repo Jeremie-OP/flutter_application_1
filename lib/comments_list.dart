@@ -1,16 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/login.dart';
+import 'package:flutter_application_1/service.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
+import 'package:http/http.dart' as http;
+
+import 'wine_page.dart';
 
 class CommentModel {
   String user = '';
   String comment = '';
   int note;
+  String? id;
 
-  CommentModel({required this.user, required this.comment, required this.note});
+  CommentModel(
+      {required this.user, required this.comment, required this.note, this.id});
 }
 
 class CommentsList extends StatelessWidget {
   List<CommentModel> comments;
-  CommentsList({Key? key, required this.comments}) : super(key: key);
+  String idWine;
+  CommentsList({Key? key, required this.comments, required this.idWine})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +48,95 @@ class CommentsList extends StatelessWidget {
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: _SingleComment(comment: comments[index])));
+                      child: SingleComment(
+                        comment: comments[index],
+                        idWine: idWine,
+                      )));
             },
           )),
         ],
       ),
     );
+  }
+}
+
+class SingleComment extends StatelessWidget {
+  CommentModel comment;
+  String idWine;
+  SingleComment({Key? key, required this.comment, required this.idWine})
+      : super(key: key);
+
+  Future<ApiResponse> deleteComm(String id) async {
+    ApiResponse _apiResponse = ApiResponse();
+    var url = Uri.parse('http://10.0.2.2:3211/api/deletecomm');
+    var token = Service().token;
+    var response =
+        await http.post(url, body: {'jwt': token, 'id': id, 'idWine': idWine});
+    switch (response.statusCode) {
+      case 200:
+        var result = json.decode(response.body);
+        _apiResponse.Data = result;
+        break;
+      case 400:
+        _apiResponse.Data = 400;
+        break;
+      default:
+        break;
+    }
+    return _apiResponse;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (Service().admin) {
+      return GestureDetector(
+        onLongPress: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Suppression de commentaire'),
+                    content: const Text(
+                        'Etes vous sur de vouloir supprimer ce commentaire ?'),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () async {
+                            var result = await deleteComm(comment.id ?? "");
+                            if (result.Data != 400) {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return WinePage(request: result.Data);
+                              }));
+                            } else if (result.Data == 400) {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      AlertDialog(
+                                        title: const Text("error"),
+                                        content: const Text(
+                                            "vous n'avez pas le droit"),
+                                        actions: <Widget>[
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: const Text("OK"))
+                                        ],
+                                      ));
+                            }
+                          },
+                          child: const Text("Oui")),
+                      TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Non")),
+                    ],
+                  ));
+        },
+        child: _SingleComment(
+          comment: comment,
+        ),
+      );
+    } else {
+      return _SingleComment(comment: comment);
+    }
   }
 }
 
@@ -61,9 +156,10 @@ class _SingleComment extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(comment.user),
-              Text(
-                comment.note.toString(),
-              ),
+              SmoothStarRating(
+                starCount: comment.note,
+                isReadOnly: true,
+              )
             ],
           ),
           Text(comment.comment),

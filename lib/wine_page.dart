@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/comment_page.dart';
 import 'package:flutter_application_1/comments_list.dart';
 import 'package:flutter_application_1/custom_widgets.dart';
 import 'package:flutter_application_1/service.dart';
@@ -21,7 +22,10 @@ class Wine {
       comments = <CommentModel>[];
       json['commentaires'].forEach((v) {
         comments.add(CommentModel(
-            user: v['ident'], comment: v['commentaire'], note: v['note']));
+            user: v['ident'],
+            comment: v['commentaire'],
+            note: v['note'],
+            id: v['_id']));
       });
     }
   }
@@ -29,8 +33,9 @@ class Wine {
 
 class WinePage extends StatefulWidget {
   var request;
+  var thatWine;
 
-  WinePage({Key? key, this.request}) : super(key: key);
+  WinePage({Key? key, this.request, this.thatWine}) : super(key: key);
 
   @override
   _WinePageState createState() => _WinePageState();
@@ -41,7 +46,11 @@ class _WinePageState extends State<WinePage> {
 
   @override
   void initState() {
-    wine = Wine.fromJson(widget.request);
+    if (widget.thatWine == null) {
+      wine = Wine.fromJson(widget.request);
+    } else {
+      wine = widget.thatWine;
+    }
     super.initState();
   }
 
@@ -95,8 +104,8 @@ class _WinePageState extends State<WinePage> {
                   const SizedBox(
                     height: 30,
                   ),
-                  Text(
-                    wine.year,
+                  const Text(
+                    "Année",
                   ),
                   const SizedBox(
                     height: 5,
@@ -111,7 +120,10 @@ class _WinePageState extends State<WinePage> {
                   ),
                   Expanded(
                     child: SingleChildScrollView(
-                        child: CommentsList(comments: wine.comments)),
+                        child: CommentsList(
+                      comments: wine.comments,
+                      idWine: wine.id,
+                    )),
                   ),
                 ],
               ),
@@ -121,7 +133,9 @@ class _WinePageState extends State<WinePage> {
           visible: Service().isConnected(),
           child: FloatingActionButton(
             onPressed: () {
-              var test = 4;
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return CommentPage(wine: wine);
+              }));
             },
             child: Icon(Icons.comment_rounded),
           )),

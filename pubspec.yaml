@@ -43,6 +43,7 @@ dependencies:
   http:
   flutter_session_manager:
   jwt_decoder: ^2.0.1
+  smooth_star_rating:
 
 dev_dependencies:
   flutter_test:

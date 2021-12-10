@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/home.dart';
+import 'package:flutter_application_1/register.dart';
 import 'package:flutter_application_1/service.dart';
 import 'package:flutter_application_1/wine_page.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -59,8 +60,21 @@ class _DrawerWineState extends State<DrawerWine> {
               child: ListTile(
                 title: const Text('Se connecter'),
                 onTap: () => {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()))
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()))
+                },
+              )),
+          Visibility(
+              visible: !connected,
+              child: ListTile(
+                title: const Text("S'enregistrer"),
+                onTap: () => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RegisterScreen()))
                 },
               )),
           Visibility(

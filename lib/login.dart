@@ -70,7 +70,7 @@ class LoginUser {
       };
 
   Future<ApiResponse> authenticateUser() async {
-    ApiResponse _apiResponse = new ApiResponse();
+    ApiResponse _apiResponse = ApiResponse();
     var url = Uri.parse('http://10.0.2.2:3211/login');
     var response = await http.post(url, body: {
       'ident': id,
