@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/service.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'custom_widgets.dart';
 import 'take_picture_screen.dart';
@@ -30,11 +31,13 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<String> initToken() async {
+    Service service = Service();
     String? tmpData;
     tmpData = await FlutterSecureStorage().read(key: "jwt");
     if (widget.token != null) {
       var tmp = JwtDecoder.decode(widget.token);
       user = tmp["ident"];
+      service.token = widget.token;
       if (tmpData == null || tmpData != widget.token) {
         await FlutterSecureStorage().write(key: "jwt", value: widget.token);
       }
@@ -42,6 +45,7 @@ class HomePageState extends State<HomePage> {
       //la verification de l'expiration semble non fonctionnel
       var tmp = JwtDecoder.decode(tmpData);
       user = tmp["ident"];
+      service.token = tmpData;
     } else {
       user = "inconnu";
     }

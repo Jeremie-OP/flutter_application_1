@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/home.dart';
+import 'package:flutter_application_1/service.dart';
 import 'package:flutter_application_1/wine_page.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'login.dart';
@@ -18,7 +19,25 @@ class AppBarWine extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(40.0);
 }
 
-class DrawerWine extends StatelessWidget {
+class DrawerWine extends StatefulWidget {
+  DrawerWine({Key? key}) : super(key: key);
+
+  @override
+  _DrawerWineState createState() => _DrawerWineState();
+}
+
+class _DrawerWineState extends State<DrawerWine> {
+  bool connected = false;
+
+  @override
+  void initState() {
+    var service = Service();
+    var tmp = service.user;
+    connected = Service().user != "inconnu" ? true : false;
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -35,27 +54,25 @@ class DrawerWine extends StatelessWidget {
                   context, MaterialPageRoute(builder: (context) => HomePage()))
             },
           ),
-          ListTile(
-            title: const Text('Se connecter'),
-            onTap: () => {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()))
-            },
-          ),
-          ListTile(
-            title: const Text('Logout'),
-            onTap: () => {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Disconnect()))
-            },
-          ),
-          ListTile(
-            title: const Text('Vin'),
-            onTap: () => {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => WinePage()))
-            },
-          )
+          Visibility(
+              visible: !connected,
+              child: ListTile(
+                title: const Text('Se connecter'),
+                onTap: () => {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()))
+                },
+              )),
+          Visibility(
+              visible: connected,
+              child: ListTile(
+                title: const Text('Logout'),
+                onTap: () {
+                  setState(() {});
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Disconnect()));
+                },
+              )),
         ],
       ),
     );
@@ -65,6 +82,7 @@ class DrawerWine extends StatelessWidget {
 class Disconnect extends StatelessWidget {
   Future<int> disconnectSession(BuildContext context) async {
     await FlutterSecureStorage().delete(key: "jwt");
+    Service().reset();
     return 1;
   }
 

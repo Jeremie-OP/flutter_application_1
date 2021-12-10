@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/comments_list.dart';
 import 'package:flutter_application_1/custom_widgets.dart';
+import 'package:flutter_application_1/service.dart';
 
 class Wine {
   late String id;
@@ -40,7 +41,6 @@ class _WinePageState extends State<WinePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     wine = Wine.fromJson(widget.request);
     super.initState();
   }
@@ -54,16 +54,17 @@ class _WinePageState extends State<WinePage> {
           color: Colors.deepPurple,
           child: Column(children: [
             Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 wine.name,
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
             ),
             Expanded(
                 child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              constraints: BoxConstraints.expand(),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              constraints: const BoxConstraints.expand(),
               decoration: const BoxDecoration(
                   color: Colors.blueGrey,
                   borderRadius: BorderRadius.only(
@@ -73,38 +74,38 @@ class _WinePageState extends State<WinePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   //Domaine
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   Text(
                     wine.domain,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.only(left: 5),
-                    child: Text("Le fameux domaine"),
-                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.only(left: 5),
+                    child: Text(wine.domain),
+                    decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                   ),
                   // Annee
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   Text(
                     wine.year,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.only(left: 5),
-                    child: Text("L'annee du merdier"),
-                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.only(left: 5),
+                    child: Text(wine.year),
+                    decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                   ),
@@ -116,6 +117,14 @@ class _WinePageState extends State<WinePage> {
               ),
             )),
           ])),
+      floatingActionButton: Visibility(
+          visible: Service().isConnected(),
+          child: FloatingActionButton(
+            onPressed: () {
+              var test = 4;
+            },
+            child: Icon(Icons.comment_rounded),
+          )),
     );
   }
 }
